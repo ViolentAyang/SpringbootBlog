@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.violentayang.blog.dao.mapper.TagMapper;
 import com.violentayang.blog.dao.pojo.Tag;
 import com.violentayang.blog.service.TagService;
+import com.violentayang.blog.vo.Result;
 import com.violentayang.blog.vo.TagVo;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
@@ -33,6 +34,22 @@ public class TagsServiceImpl implements TagService {
         //mybatisplus无法进行多表查询
         List<Tag> tags = tagMapper.findTagsByArticleId(articleId);
         return copyList(tags);
+    }
+
+    @Override
+    public Result hots(int limit) {
+        /**
+         * 1.标签所拥有的文章数量最多 就是最热标签
+         * 2.查询 根据tag_id 分组 计数 从大到小排列 取前limit个
+         */
+        List<Long> tagIds = tagMapper.findHotsTagIds(limit);
+        if (CollectionUtils.isEmpty(tagIds)){
+            return Result.success(Collections.emptyList());
+        }
+        //需要的是tagId和tagName Tag对象
+        //select * from tag where id in (1,2,3,4)
+        List<Tag> tagList = tagMapper.findTagsByTagIds(tagIds);
+        return Result.success(tagList);
     }
 
     private List<TagVo> copyList(List<Tag> tagList) {
