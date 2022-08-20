@@ -1,5 +1,6 @@
 package com.violentayang.blog.service;
 
+import com.violentayang.blog.dao.pojo.SysUser;
 import com.violentayang.blog.vo.Result;
 import com.violentayang.blog.vo.params.LoginParam;
 
@@ -10,4 +11,6 @@ public interface LoginService {
      * @return
      */
     Result login(LoginParam loginParam);
+
+    SysUser checkToken(String token);
 }
