@@ -1,5 +1,6 @@
 package com.violentayang.blog.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.violentayang.blog.dao.mapper.SysUserMapper;
 import com.violentayang.blog.dao.pojo.SysUser;
 import com.violentayang.blog.service.UserService;
@@ -21,9 +22,20 @@ public class SysUserServiceImpl implements UserService {
         SysUser sysUser = sysUserMapper.selectById(id);
         if (sysUser == null){
             sysUser = new SysUser();
-            sysUser.setNickname("码神之路");
+            sysUser.setNickname("admin");
         }
         return sysUser;
+    }
+
+    @Override
+    public SysUser findUser(String account, String password) {
+        LambdaQueryWrapper<SysUser> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(SysUser::getAccount,account);
+        queryWrapper.eq(SysUser::getPassword,password);
+        //去loginService处理密码加密
+        queryWrapper.select(SysUser::getAccount,SysUser::getAvatar,SysUser::getNickname);
+        queryWrapper.last("limit 1");
+        return sysUserMapper.selectOne(queryWrapper);
     }
 }
 
